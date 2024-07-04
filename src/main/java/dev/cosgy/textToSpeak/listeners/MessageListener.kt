@@ -48,10 +48,7 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
             val skipWords = arrayOf("s", "skip")
 
             if (isBot) return
-            if (skipWords.contains(event.message.contentDisplay)) {
-                val am = event.guild.audioManager.sendingHandler as AudioHandler?
-                am?.stopAndClear()
-            }
+            if (skipWords.contains(event.message.contentDisplay)) return
             val guild = event.guild
             val textChannel = event.guildChannel.asTextChannel()
             var settingText = bot.settingsManager.getSettings(event.guild).getTextChannel(event.guild)
