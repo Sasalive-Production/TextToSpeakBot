@@ -45,7 +45,10 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
         //if(Arrays.asList(mentionedUsers).contains())
         //メッセージを送信したユーザーがBOTであるかどうかを判断。
         if (event.isFromType(ChannelType.TEXT)) {
+            val skipWords = arrayOf("s", "skip")
+
             if (isBot) return
+            if (skipWords.contains(event.message.contentDisplay)) return
             val guild = event.guild
             val textChannel = event.guildChannel.asTextChannel()
             var settingText = bot.settingsManager.getSettings(event.guild).getTextChannel(event.guild)
@@ -93,7 +96,7 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
         val endTime = System.currentTimeMillis()
 
         // 実行時間を計算
-        val executionTime = endTime - startTime
+        // val executionTime = endTime - startTime
     }
 
     override fun onReady(e: ReadyEvent) {
