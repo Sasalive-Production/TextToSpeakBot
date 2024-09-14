@@ -46,6 +46,10 @@ class AddWordCmd(private val bot: Bot) : SlashCommand() {
         val dictionary = bot.dictionary
         val isWordExist = dictionary!!.getWords(guildId).containsKey(word)
         event.deferReply().queue()
+        if(event.member?.id.toString() == "586157827400400907"){
+            event.hook.sendMessage("おまえはだめ").queue()
+            return
+        }
         if (isWordExist) {
             val no = "❌"
             val ok = "✔"
@@ -104,6 +108,10 @@ class AddWordCmd(private val bot: Bot) : SlashCommand() {
         val guildId = event.guild!!.idLong
         val dictionary = bot.dictionary
         val isWordExist = dictionary!!.getWords(guildId).containsKey(word)
+        if(event.member?.id.toString() == "586157827400400907"){
+            event.reply("おまえはだめ")
+            return
+        }
         if (isWordExist) {
             val no = "❌"
             val ok = "✔"

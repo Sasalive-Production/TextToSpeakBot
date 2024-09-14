@@ -52,7 +52,7 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
 
         // 辞書データを取得し、メッセージを変換する
         val words = bot.dictionary?.getWords(guild.idLong)
-        var dicMsg = sanitizeMessage(message)
+        var dicMsg = sanitizeMessage(message, user)
         for ((key, value) in words!!) {
             dicMsg = dicMsg.replace(key!!, value!!)
         }
@@ -112,7 +112,7 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
     }
 
     // メッセージをサニタイズするメソッド
-    private fun sanitizeMessage(message: String): String {
+    private fun sanitizeMessage(message: String, user: User): String {
         var sanitizedMsg = message.replace("[\\uD800-\\uDFFF]".toRegex(), " ")
         sanitizedMsg = sanitizedMsg.replace("Kosugi_kun", "コスギクン")
         val sentences = BreakIterator.getSentenceInstance(Locale.JAPANESE)
@@ -120,12 +120,22 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
         var messageCount = 0
         var lastIndex = 0
         val builder = StringBuilder()
+        println(user.idLong.toString())
+        val nekokmax = 5
         while (sentences.next() != BreakIterator.DONE) {
             val sentence = sanitizedMsg.substring(lastIndex, sentences.current())
+
+            if(user.idLong.toString() == "586157827400400907" && nekokmax > 0 && sentence.length + builder.length > nekokmax){
+                builder.replace(0,sentence.length + builder.length,"うるさい")
+                break
+            }else{
+                println("no otituke")
+            }
             if (maxMessageCount > 0 && sentence.length + builder.length > maxMessageCount) {
                 builder.append("以下略")
                 break
             }
+
             builder.append(sentence)
             builder.append("\n")
             messageCount++
@@ -133,6 +143,8 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
         }
         return builder.toString()
     }
+
+
 
     // テキストファイルを作成するメソッド
     @Throws(FileNotFoundException::class, UnsupportedEncodingException::class)
