@@ -57,7 +57,7 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
             }
             val guild = event.guild
             val guildChannel = event.guildChannel
-            var settingText = bot.settingsManager.getSettings(event.guild).getTextChannel(event.guild) as GuildChannel
+            var settingText = bot.settingsManager.getSettings(event.guild).getTextChannel(event.guild)
             if (!guild.audioManager.isConnected) {
                 return
             }
@@ -65,9 +65,9 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
             if (prefix?.let { msg.startsWith(it) } == true) {
                 return
             }
-            if (guildChannel !== settingText) {
+            if (guildChannel.idLong != settingText?.idLong) {
                 if (settingText == null) {
-                    settingText = event.guild.getGuildChannelById(ReadChannel.getChannel(event.guild.idLong)!!)!!
+                    settingText = event.guild.getTextChannelById(ReadChannel.getChannel(event.guild.idLong)!!)
                 }
             }
 
