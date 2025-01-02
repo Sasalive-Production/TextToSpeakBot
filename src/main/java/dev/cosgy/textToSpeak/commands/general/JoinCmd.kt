@@ -69,7 +69,7 @@ class JoinCmd(private var bot: Bot) : SlashCommand() {
                         "ニックネーム優先:${if (settings.isReadNic()) "有効" else "無効"}", true
             )
             event.hook.sendMessageEmbeds(builder.build()).queue()
-            ReadChannel.setChannel(event.guild!!.idLong, event.textChannel.idLong)
+            ReadChannel.setChannel(event.guild!!.idLong, event.channel.idLong)
         } catch (ex: PermissionException) {
             builder.appendDescription(
                 event.client.error + String.format(
@@ -110,7 +110,7 @@ class JoinCmd(private var bot: Bot) : SlashCommand() {
             builder.addField("ボイスチャンネル", String.format("**%s**", userState.channel!!.name), false)
             builder.setDescription("ボイスチャンネルへの接続に成功しました。")
             event.reply(builder.build())
-            ReadChannel.setChannel(event.guild.idLong, event.textChannel.idLong)
+            ReadChannel.setChannel(event.guild.idLong, event.channel.idLong)
         } catch (ex: PermissionException) {
             builder.setDescription("ボイスチャンネルへの接続に失敗しました。")
             event.reply(builder.build())

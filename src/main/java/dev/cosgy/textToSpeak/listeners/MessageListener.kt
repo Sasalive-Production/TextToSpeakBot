@@ -68,7 +68,7 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
             }
             if (guildChannel.idLong != settingText?.idLong) {
                 if (settingText == null) {
-                    settingText = event.guild.getTextChannelById(ReadChannel.getChannel(event.guild.idLong)!!)!!
+                    settingText = event.guild.getGuildChannelById(ReadChannel.getChannel(event.guild.idLong)!!)
                 }
             }
 
