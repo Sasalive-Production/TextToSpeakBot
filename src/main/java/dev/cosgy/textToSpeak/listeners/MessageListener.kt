@@ -23,6 +23,7 @@ import dev.cosgy.textToSpeak.Bot
 import dev.cosgy.textToSpeak.audio.AudioHandler
 import dev.cosgy.textToSpeak.audio.QueuedTrack
 import dev.cosgy.textToSpeak.utils.ReadChannel
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion
@@ -57,7 +58,7 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
             }
             val guild = event.guild
             val guildChannel = event.guildChannel
-            var settingText = bot.settingsManager.getSettings(event.guild).getTextChannel(event.guild)
+            var settingText: GuildChannel? = bot.settingsManager.getSettings(event.guild).getTextChannel(event.guild)
             if (!guild.audioManager.isConnected) {
                 return
             }
@@ -67,7 +68,7 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
             }
             if (guildChannel.idLong != settingText?.idLong) {
                 if (settingText == null) {
-                    settingText = event.guild.getTextChannelById(ReadChannel.getChannel(event.guild.idLong)!!)
+                    settingText = event.guild.getTextChannelById(ReadChannel.getChannel(event.guild.idLong)!!)!!
                 }
             }
 
@@ -78,7 +79,7 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
             // 伏せ字を置き換え
             msg = msg.replace("\\|\\|([^|]+)\\|\\|".toRegex(), "ねたばれ")
             message.getStickers().forEach { sticker -> msg += " " + sticker.getName() }
-            if (guildChannel === settingText) {
+            if (guildChannel.idLong == settingText.idLong) {
                 val settings = bot.settingsManager.getSettings(guild)
                 if (settings.isReadName()) {
 
