@@ -24,6 +24,8 @@ import dev.cosgy.textToSpeak.audio.AudioHandler
 import dev.cosgy.textToSpeak.audio.QueuedTrack
 import dev.cosgy.textToSpeak.utils.ReadChannel
 import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
@@ -40,11 +42,11 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
         val message = event.message //受信したメッセージ。
         event.channel //メッセージが送信されたMessageChannel
         var msg = message.contentDisplay
-        //人間が読める形式のメッセージが返されます。 クライアントに表示されるものと同様。
+        //人間が読める形式のメッセージが返されます。クライアントに表示されるものと同様。
         val isBot = author.isBot
         //if(Arrays.asList(mentionedUsers).contains())
         //メッセージを送信したユーザーがBOTであるかどうかを判断。
-        if (event.isFromType(ChannelType.TEXT)) {
+        if (event.isFromType(ChannelType.TEXT) || event.isFromType(ChannelType.VOICE)) {
             val skipWords = arrayOf("s", "skip")
 
             if (isBot) return
@@ -54,8 +56,8 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
                 return
             }
             val guild = event.guild
-            val textChannel = event.guildChannel.asTextChannel()
-            var settingText = bot.settingsManager.getSettings(event.guild).getTextChannel(event.guild)
+            val guildChannel = event.guildChannel
+            var settingText = bot.settingsManager.getSettings(event.guild).getTextChannel(event.guild) as GuildChannel
             if (!guild.audioManager.isConnected) {
                 return
             }
@@ -63,9 +65,9 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
             if (prefix?.let { msg.startsWith(it) } == true) {
                 return
             }
-            if (textChannel !== settingText) {
+            if (guildChannel !== settingText) {
                 if (settingText == null) {
-                    settingText = event.guild.getTextChannelById(ReadChannel.getChannel(event.guild.idLong)!!)
+                    settingText = event.guild.getGuildChannelById(ReadChannel.getChannel(event.guild.idLong)!!)!!
                 }
             }
 
@@ -76,7 +78,7 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
             // 伏せ字を置き換え
             msg = msg.replace("\\|\\|([^|]+)\\|\\|".toRegex(), "ねたばれ")
             message.getStickers().forEach { sticker -> msg += " " + sticker.getName() }
-            if (textChannel === settingText) {
+            if (guildChannel === settingText) {
                 val settings = bot.settingsManager.getSettings(guild)
                 if (settings.isReadName()) {
 
